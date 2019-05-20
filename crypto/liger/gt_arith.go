@@ -10,7 +10,7 @@ extern int setup();
 int gt_comp(gt_t *a, gt_t *b){
 	setup();
 
-	if (gt_cmp(*a, *b) == CMP_EQ)
+	if (gt_cmp(*a, *b) == RLC_EQ)
 		return 1;
 	return 0;
 }

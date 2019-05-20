@@ -8,7 +8,7 @@ extern int setup();
 
 int g2_comp(g2_t a, g2_t b){
 	setup();
-	if (g2_cmp(a, b) == CMP_EQ)
+	if (g2_cmp(a, b) == RLC_EQ)
 		return 1;
 	return 0;
 }

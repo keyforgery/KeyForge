@@ -8,7 +8,7 @@ package liger
 extern int setup();
 int g1_comp(g1_t a, g1_t b){
 	setup();
-	if (g1_cmp(a, b) == CMP_EQ)
+	if (g1_cmp(a, b) == RLC_EQ)
 		return 1;
 	return 0;
 }
@@ -50,4 +50,9 @@ func (g *G1) MulBN(other *BN) {
 // sets g = g + other
 func (g *G1) Add(other *G1) {
 	C.addPoint(g.cptr, other.cptr)
+}
+
+// These are equivalent group operations...
+func (g *G1) Mul(other *G1) {
+	g.Add(other)
 }

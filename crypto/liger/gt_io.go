@@ -28,12 +28,36 @@ void gTFromBytes(gt_t* dest, char* src,  int len) {
 */
 import "C"
 import (
+	"encoding/base64"
 	"unsafe"
 )
 
 // Set sets the value of g to be the same as src.
 func (g *GT) Set(src *GT) {
 	C.copyGT(g.cptr, src.cptr)
+}
+
+func CloneGT(other *GT) *GT {
+	result := NewGT()
+	result.Set(other)
+	return result
+}
+
+// Exports as b64 encoded string
+func (g *GT) Base64() string {
+	return base64.StdEncoding.EncodeToString(g.Bytes())
+}
+
+func GTFromBase64(sEnc string) (error, *GT) {
+	g := NewGT()
+	sDec, err := base64.StdEncoding.DecodeString(sEnc)
+
+	if err != nil {
+		return err, nil
+	}
+
+	g.SetBytes(sDec)
+	return nil, g
 }
 
 // Bytes exports GT as a byte sequence.

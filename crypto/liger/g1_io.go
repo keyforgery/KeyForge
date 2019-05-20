@@ -33,6 +33,7 @@ void g1FromBytes(g1_t dest, char* src,  int len) {
 */
 import "C"
 import (
+	"encoding/base64"
 	"hash"
 	"unsafe"
 )
@@ -40,6 +41,12 @@ import (
 // Set sets the value of g to be the same as src.
 func (g *G1) Set(src *G1) {
 	C.copyG1(g.cptr, src.cptr)
+}
+
+func CloneG1(other *G1) *G1 {
+	result := NewG1()
+	result.Set(other)
+	return result
 }
 
 // Deterministically maps a string onto a point in g1
@@ -59,7 +66,24 @@ func (g *G1) SetFromString(s string) {
 	C.g1Map(g.cptr, result, C.int(len(s)))
 }
 
-// Bytes exports el as a byte sequence.
+// Exports as b64 encoded string
+func (g *G1) Base64() string {
+	return base64.StdEncoding.EncodeToString(g.Bytes())
+}
+
+func G1FromBase64(sEnc string) (error, *G1) {
+	g := NewG1()
+	sDec, err := base64.StdEncoding.DecodeString(sEnc)
+
+	if err != nil {
+		return err, nil
+	}
+
+	g.SetBytes(sDec)
+	return nil, g
+}
+
+// Exports as a byte sequence.
 func (g *G1) Bytes() []byte {
 	length := g.BytesLen()
 	buf := make([]byte, length)

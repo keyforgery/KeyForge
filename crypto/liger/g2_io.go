@@ -34,6 +34,7 @@ void g2FromBytes(g2_t dest, char* src,  int len) {
 */
 import "C"
 import (
+	"encoding/base64"
 	"hash"
 	"unsafe"
 )
@@ -41,6 +42,12 @@ import (
 // Set sets the value of g to be the same as src.
 func (g *G2) Set(src *G2) {
 	C.copyG2(g.cptr, src.cptr)
+}
+
+func CloneG2(other *G2) *G2 {
+	result := NewG2()
+	result.Set(other)
+	return result
 }
 
 // Deterministically maps a string onto a point in g1
@@ -74,6 +81,23 @@ func (g *G2) SetBytes(buf []byte) {
 	defer C.free(cbytes)
 
 	C.g2FromBytes(g.cptr, (*C.char)(cbytes), C.int(len(buf)))
+}
+
+// Exports as b64 encoded string
+func (g *G2) Base64() string {
+	return base64.StdEncoding.EncodeToString(g.Bytes())
+}
+
+func G2FromBase64(sEnc string) (error, *G2) {
+	g := NewG2()
+	sDec, err := base64.StdEncoding.DecodeString(sEnc)
+
+	if err != nil {
+		return err, nil
+	}
+
+	g.SetBytes(sDec)
+	return nil, g
 }
 
 // CompressedBytes exports el in a compressed form as a byte sequence.

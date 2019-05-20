@@ -13,7 +13,7 @@ int setup(){
 	if (core_get() != NULL)
 		return 0; // already initialized
 
-	if (core_init() != STS_OK)
+	if (core_init() != RLC_OK)
 		return -1;
 	pc_param_set_any();
 	return 0;
@@ -70,14 +70,25 @@ void setG1Rand(g1_t g) {
 	setup();
 	g1_rand(g);
 }
+
 void setG2Rand(g2_t g) {
 	setup();
 	g2_rand(g);
 }
 
+void setG1Generator(g1_t g) {
+	setup();
+	g1_get_gen(g);
+}
+
+void setG2Generator(g2_t g) {
+	setup();
+	g2_get_gen(g);
+}
+
+
 void printG1(g1_t g) { g1_print(g);}
 void printG2(g2_t g) { g2_print(g);}
-
 
 void pair(gt_t* in, g1_t g1, g2_t g2){
 	pc_map(*in, g1, g2);
@@ -133,6 +144,14 @@ func NewGT() *GT {
 	result := GT{C.newGT(), true}
 	runtime.SetFinalizer(&result, clearGT)
 	return &result
+}
+
+func (g *G1) SetGenerator() {
+	C.setG1Generator(g.cptr)
+}
+
+func (g *G2) SetGenerator() {
+	C.setG2Generator(g.cptr)
 }
 
 func clearG1(g1 *G1) {
